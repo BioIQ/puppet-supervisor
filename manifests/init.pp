@@ -32,7 +32,7 @@ class supervisor (
     default: { fail("ERROR: ${::osfamily} based systems are not supported!") }
   }
 
-  package { $pkg_setuptools: ensure => installed, }
+  package { $pkg_setuptools: ensure => $::operatingsystemmajrelease ? { '7' => 'latest', default => '1.3.1-4.el6.art'} }
 
   package { 'supervisor':
     ensure   => '3.1.2',
@@ -57,6 +57,9 @@ class supervisor (
     require => Package['supervisor'],
   }
 
+  $supervisorctl_username = hiera('supervisorctl_username')
+  $supervisorctl_password = hiera('supervisorctl_password')
+  
   file { "${path_config}/supervisord.conf":
     ensure  => file,
     content => template('supervisor/supervisord.conf.erb'),
@@ -66,7 +69,7 @@ class supervisor (
     require => Package['supervisor'],
     notify  => Service['supervisord'],
   }
-
+  
   file { "${path_config}/supervisord.d":
     ensure  => 'directory',
     owner   => 'root',
