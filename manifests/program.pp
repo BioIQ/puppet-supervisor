@@ -45,6 +45,7 @@ define supervisor::program (
     absent: {
       $autostart = false
       $service_ensure = 'stopped'
+      $config_ensure = absent
     }
     present: {
       $autostart = true
